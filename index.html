@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Business Management Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="login-screen" class="screen active">
+        <div class="login-card glass-card">
+            <div class="login-header">
+                <i data-lucide="shield-check" class="icon-large accent-color"></i>
+                <h2>Admin Access</h2>
+                <p>Secure login for management</p>
+            </div>
+            <form id="login-form">
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="user"></i>
+                        <input type="text" id="username" placeholder="admin" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="lock"></i>
+                        <input type="password" id="password" placeholder="admin123" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <span>Login securely</span>
+                    <i data-lucide="arrow-right"></i>
+                </button>
+            </form>
+            <div id="login-error" class="error-msg"></div>
+        </div>
+    </div>
+
+    <!-- Main Application Wrapper -->
+    <div id="dashboard-screen" class="screen app-wrapper">
+        
+        <!-- STAFF PANEL SIDEBAR -->
+        <aside class="staff-sidebar glass-card">
+            <div class="sidebar-header">
+                <h3><i data-lucide="users" class="accent-color"></i> Staff Panel</h3>
+                <button id="clear-staff-filter" class="btn btn-text btn-sm hidden" title="Clear Staff Filter">
+                    <i data-lucide="x"></i> Clear
+                </button>
+            </div>
+            <div class="sidebar-search">
+                <div class="input-wrapper">
+                    <i data-lucide="search"></i>
+                    <input type="text" id="staff-search-input" placeholder="Search staff...">
+                </div>
+            </div>
+            <div id="staff-list" class="staff-list">
+                <!-- Dynamic Staff Cards -->
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <div class="main-content-area">
+            <header class="app-header glass-card">
+                <div class="brand">
+                    <div class="logo-box">
+                        <i data-lucide="briefcase"></i>
+                    </div>
+                    <h1>Customer Database</h1>
+                </div>
+                <button id="logout-btn" class="btn btn-outline">
+                    <i data-lucide="log-out"></i>
+                    <span>Logout</span>
+                </button>
+            </header>
+
+            <main class="dashboard-container">
+                <!-- Summary Stats -->
+                <section class="summary-stats">
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon income-icon">
+                            <i data-lucide="banknote"></i>
+                        </div>
+                        <div class="stat-details">
+                            <p>Total Revenue</p>
+                            <h3 id="total-earnings">AED 0.00</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon today-icon">
+                            <i data-lucide="calendar-check"></i>
+                        </div>
+                        <div class="stat-details">
+                            <p>Today's Collection</p>
+                            <h3 id="today-collection">AED 0.00</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon commission-icon">
+                            <i data-lucide="award"></i>
+                        </div>
+                        <div class="stat-details">
+                            <p>Total Staff Commissions</p>
+                            <h3 id="total-commission">AED 0.00</h3>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="main-content-grid">
+                    <!-- Form Section -->
+                    <section class="form-section glass-card">
+                        <div class="section-header">
+                            <h2><i data-lucide="file-plus"></i> <span id="form-title">New Entry</span></h2>
+                            <button type="button" id="auto-datetime-btn" class="btn btn-text btn-sm" title="Set to Current Date & Time">
+                                <i data-lucide="clock"></i> Auto Date/Time
+                            </button>
+                        </div>
+                        <form id="record-form">
+                            <input type="hidden" id="record-id">
+                            
+                            <div class="form-grid">
+                                <div class="input-group">
+                                    <label for="customer-name">Name</label>
+                                    <input type="text" id="customer-name" placeholder="John Doe" required>
+                                </div>
+                                
+                                <div class="input-group">
+                                    <label for="phone-number">Phone</label>
+                                    <input type="tel" id="phone-number" placeholder="+971 50 123 4567" required>
+                                </div>
+                                
+                                <div class="input-group">
+                                    <label for="amount">Amount (AED)</label>
+                                    <input type="number" id="amount" step="0.01" min="0" placeholder="0.00" required>
+                                </div>
+                                
+                                <div class="input-group">
+                                    <label for="staff-commission">Staff Commission (AED)</label>
+                                    <input type="number" id="staff-commission" step="0.01" min="0" placeholder="0.00" required>
+                                </div>
+
+                                <div class="input-group">
+                                    <label for="staff-name">Staff Name</label>
+                                    <input type="text" id="staff-name" placeholder="Staff Member" required>
+                                </div>
+                                
+                                <div class="input-group">
+                                    <label for="nationality">Nationality</label>
+                                    <input type="text" id="nationality" placeholder="e.g. American, British" required>
+                                </div>
+                                
+                                <div class="input-group">
+                                    <label for="service-date">Service Date</label>
+                                    <input type="date" id="service-date" required>
+                                </div>
+                                
+                                <div class="input-group">
+                                    <label for="service-time">Service Time</label>
+                                    <input type="time" id="service-time" required>
+                                </div>
+                                
+                                <div class="input-group">
+                                    <label for="room-number">Room Number</label>
+                                    <input type="text" id="room-number" placeholder="e.g. Room 101" required>
+                                </div>
+
+                                <div class="input-group">
+                                    <label for="service-timing">Service Timing</label>
+                                    <select id="service-timing" class="filter-input" style="width: 100%; height: 46px;" required>
+                                        <option value="" disabled selected>Select timing...</option>
+                                        <option value="1 HOUR">1 HOUR</option>
+                                        <option value="2 HOUR">2 HOUR</option>
+                                        <option value="3 HOUR">3 HOUR</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="input-group">
+                                    <label for="body-size">Body Size</label>
+                                    <select id="body-size" class="filter-input" style="width: 100%; height: 46px;" required>
+                                        <option value="" disabled selected>Select size...</option>
+                                        <option value="BIG">BIG</option>
+                                        <option value="MEDIUM">MEDIUM</option>
+                                        <option value="LARGE">LARGE</option>
+                                    </select>
+                                </div>
+
+                                <div class="input-group">
+                                    <label for="behavior">Behavior</label>
+                                    <select id="behavior" class="filter-input" style="width: 100%; height: 46px;" required>
+                                        <option value="" disabled selected>Select behavior...</option>
+                                        <option value="GOOD">GOOD</option>
+                                        <option value="NO BAD">NO BAD</option>
+                                        <option value="BAD">BAD</option>
+                                        <option value="VERY BAD">VERY BAD</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="checkbox-group full-width" style="display: flex; gap: 1.5rem; align-items: center; margin-bottom: 1rem; padding: 0.5rem 1rem; background: rgba(255,255,255,0.02); border-radius: var(--radius-md);">
+                                    <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-main); cursor: pointer; font-weight: 500;">
+                                        <input type="checkbox" id="repeat-customer" style="width: 1.2rem; height: 1.2rem; accent-color: var(--accent-primary);"> Repeat Customer
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-main); cursor: pointer; font-weight: 500;">
+                                        <input type="checkbox" id="mallu-customer" style="width: 1.2rem; height: 1.2rem; accent-color: var(--accent-primary);"> Mallu Customer
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" id="cancel-edit-btn" class="btn btn-outline hidden">Cancel</button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i data-lucide="save"></i>
+                                    <span id="submit-btn-text">Save Record</span>
+                                </button>
+                            </div>
+                        </form>
+                    </section>
+
+                    <!-- Table & Filter Section -->
+                    <section class="data-section">
+                        <!-- ADVANCED MULTI-FILTER SYSTEM -->
+                        <div class="advanced-filters glass-card">
+                            <div class="section-header" style="margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                <h3><i data-lucide="filter" class="accent-color"></i> Real-time Filters</h3>
+                                <button id="clear-filters-btn" class="btn btn-outline btn-sm">
+                                    <i data-lucide="x-circle"></i> Reset All
+                                </button>
+                            </div>
+                            
+                            <!-- Search Bar (Instant) -->
+                            <div class="search-box full-width" style="margin-bottom: 1rem;">
+                                <i data-lucide="search"></i>
+                                <input type="text" id="search-input" placeholder="Instant Search (Name, Phone, Room...)" style="width: 100%; border-radius: var(--radius-md);">
+                            </div>
+
+                            <div class="filters-grid">
+                                <!-- Start Date -->
+                                <div class="filter-group">
+                                    <label>Start Date</label>
+                                    <input type="date" id="filter-date-start" class="filter-input">
+                                </div>
+                                
+                                <!-- End Date -->
+                                <div class="filter-group">
+                                    <label>End Date</label>
+                                    <input type="date" id="filter-date-end" class="filter-input">
+                                </div>
+
+                                <!-- Nationality -->
+                                <div class="filter-group">
+                                    <label>Nationality</label>
+                                    <select id="filter-nationality" class="filter-input">
+                                        <option value="">All Nationalities</option>
+                                    </select>
+                                </div>
+
+                                <!-- Body Size -->
+                                <div class="filter-group">
+                                    <label>Body Size</label>
+                                    <select id="filter-body-size" class="filter-input">
+                                        <option value="">All Sizes</option>
+                                        <option value="BIG">BIG</option>
+                                        <option value="MEDIUM">MEDIUM</option>
+                                        <option value="LARGE">LARGE</option>
+                                    </select>
+                                </div>
+
+                                <!-- Behavior -->
+                                <div class="filter-group">
+                                    <label>Behavior</label>
+                                    <select id="filter-behavior" class="filter-input">
+                                        <option value="">All Behaviors</option>
+                                        <option value="GOOD">GOOD</option>
+                                        <option value="NO BAD">NO BAD</option>
+                                        <option value="BAD">BAD</option>
+                                        <option value="VERY BAD">VERY BAD</option>
+                                    </select>
+                                </div>
+
+                                <!-- Exact Amount -->
+                                <div class="filter-group">
+                                    <label>Exact Amount (AED)</label>
+                                    <input type="number" id="filter-amount" class="filter-input" placeholder="Search amount...">
+                                </div>
+                                
+                                <!-- Hidden Staff Filter (Controlled by Sidebar) -->
+                                <input type="hidden" id="filter-staff" value="">
+                            </div>
+                        </div>
+
+                        <!-- Table -->
+                        <div class="table-container glass-card" style="margin-top: 1.5rem; padding: 1.5rem;">
+                            <div class="section-header flex-between">
+                                <h2><i data-lucide="list"></i> Database Records</h2>
+                                <button id="export-btn" class="btn btn-success">
+                                    <i data-lucide="download"></i> Export CSV
+                                </button>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table id="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date & Time</th>
+                                            <th>Customer Name</th>
+                                            <th>Room & Timing</th>
+                                            <th>Behavior / Size</th>
+                                            <th>Staff & Nationality</th>
+                                            <th>Amount</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="table-body">
+                                        <!-- Dynamic Rows -->
+                                    </tbody>
+                                </table>
+                                <div id="empty-state" class="empty-state hidden">
+                                    <div class="empty-icon-wrap">
+                                        <i data-lucide="inbox"></i>
+                                    </div>
+                                    <p>No matching records found.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Success Popup -->
+    <div id="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
