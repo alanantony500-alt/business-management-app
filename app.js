@@ -1,3 +1,8 @@
+// Initialize Supabase Client
+const SUPABASE_URL = 'https://dhlfcenonuuqgcecixwm.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_jbSb-Iko_JxHF7cegulmqg_9Iy1xHtO';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 // Initialize Lucide Icons
 lucide.createIcons();
 
@@ -62,22 +67,19 @@ const todayCollectionEl = document.getElementById('today-collection');
 const totalCommissionEl = document.getElementById('total-commission');
 
 // State
-let records = JSON.parse(localStorage.getItem('business_records_v6')) || [];
+let records = [];
 let isAuthenticated = sessionStorage.getItem('is_authenticated') === 'true';
 
 // Initial Setup
-function initApp() {
+async function initApp() {
     checkAuth();
 }
 
-function checkAuth() {
+async function checkAuth() {
     if (isAuthenticated) {
         loginScreen.classList.remove('active');
         dashboardScreen.classList.add('active');
-        updateStaffPanel();
-        updateFilterDropdowns();
-        renderTable();
-        updateDashboardCards();
+        await fetchRecords();
         lucide.createIcons();
     } else {
         dashboardScreen.classList.remove('active');
@@ -85,7 +87,7 @@ function checkAuth() {
     }
 }
 
-loginForm.addEventListener('submit', (e) => {
+loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (usernameInput.value === 'admin' && passwordInput.value === 'admin123') {
         isAuthenticated = true;
@@ -106,6 +108,29 @@ logoutBtn.addEventListener('click', () => {
     checkAuth();
 });
 
+// Fetch Data from Supabase
+async function fetchRecords() {
+    tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 2rem;">Loading data from cloud...</td></tr>';
+    
+    const { data, error } = await supabase
+        .from('customers')
+        .select('*')
+        .order('created_at', { ascending: false });
+        
+    if (error) {
+        showToast('Failed to load database: ' + error.message, 'error');
+        console.error(error);
+        return;
+    }
+    
+    records = data || [];
+    
+    updateStaffPanel();
+    updateFilterDropdowns();
+    renderTable();
+    updateDashboardCards();
+}
+
 // Auto Date/Time
 function setAutoDateTime() {
     const now = new Date();
@@ -121,8 +146,8 @@ function setAutoDateTime() {
 autoDateTimeBtn.addEventListener('click', setAutoDateTime);
 setAutoDateTime();
 
-// Form Submit
-recordForm.addEventListener('submit', (e) => {
+// Form Submit (Insert / Update to Supabase)
+recordForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
     const id = recordIdInput.value;
@@ -130,7 +155,6 @@ recordForm.addEventListener('submit', (e) => {
     const staffCommission = parseFloat(staffCommissionInput.value) || 0;
     
     const recordData = {
-        id: id ? id : Date.now().toString(),
         name: customerName.value.trim(),
         phone: phoneNumber.value.trim(),
         nationality: nationalityInput.value.trim(),
@@ -144,35 +168,46 @@ recordForm.addEventListener('submit', (e) => {
         service_time: serviceTime.value,
         room_number: roomNumberInput.value.trim(),
         repeat_customer: repeatCustomerInput.checked,
-        mallu_customer: malluCustomerInput.checked,
-        created_at: new Date(`${serviceDate.value}T${serviceTime.value}`).getTime()
+        mallu_customer: malluCustomerInput.checked
     };
     
+    const originalBtnHtml = submitBtnText.parentElement.innerHTML;
+    submitBtnText.parentElement.innerHTML = '<i data-lucide="loader" class="spin"></i> <span>Saving...</span>';
+    lucide.createIcons();
+    
     if (id) {
-        const index = records.findIndex(r => r.id === id);
-        if (index !== -1) {
-            recordData.created_at = records[index].created_at;
-            records[index] = recordData;
+        // Update existing record
+        const { error } = await supabase
+            .from('customers')
+            .update(recordData)
+            .eq('id', id);
+            
+        if (error) {
+            showToast('Failed to update record: ' + error.message, 'error');
+            console.error(error);
+        } else {
             showToast('Record updated successfully');
         }
     } else {
-        recordData.created_at = Date.now();
-        records.push(recordData);
-        showToast('New record added successfully');
+        // Insert new record
+        const { error } = await supabase
+            .from('customers')
+            .insert([recordData]);
+            
+        if (error) {
+            showToast('Failed to add record: ' + error.message, 'error');
+            console.error(error);
+        } else {
+            showToast('New record added successfully');
+        }
     }
     
-    saveData();
+    submitBtnText.parentElement.innerHTML = originalBtnHtml;
+    lucide.createIcons();
+    
     resetForm();
-    updateStaffPanel();
-    updateFilterDropdowns();
-    renderTable();
-    updateDashboardCards();
+    await fetchRecords(); // Refresh data from cloud
 });
-
-function saveData() {
-    records.sort((a, b) => b.created_at - a.created_at);
-    localStorage.setItem('business_records_v6', JSON.stringify(records));
-}
 
 // 👩💼 STAFF PANEL LOGIC
 function updateStaffPanel() {
@@ -182,7 +217,7 @@ function updateStaffPanel() {
     records.forEach(r => {
         const name = r.staff_name || 'Unknown';
         if (!staffStats[name]) {
-            staffStats[name] = { name: name, clients: 0, earnings: 0 }; // earnings = their commission
+            staffStats[name] = { name: name, clients: 0, earnings: 0 }; 
         }
         staffStats[name].clients += 1;
         staffStats[name].earnings += (r.staff_commission || 0);
@@ -306,7 +341,7 @@ function renderTable() {
         filteredRecords.forEach(record => {
             const tr = document.createElement('tr');
             
-            const dateObj = new Date(record.created_at || Date.now());
+            const dateObj = new Date(record.created_at);
             const dateStr = dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
             
             const amountAedStr = formatAED(record.amount_aed);
@@ -413,7 +448,7 @@ window.editRecord = function(id) {
     malluCustomerInput.checked = record.mallu_customer || false;
     
     formTitle.textContent = 'Edit Entry';
-    submitBtnText.textContent = 'Update Record';
+    document.getElementById('submit-btn-text').textContent = 'Update Record';
     cancelEditBtn.classList.remove('hidden');
     
     document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
@@ -425,12 +460,12 @@ function resetForm() {
     recordForm.reset();
     recordIdInput.value = '';
     formTitle.textContent = 'New Entry';
-    submitBtnText.textContent = 'Save Record';
+    document.getElementById('submit-btn-text').textContent = 'Save Record';
     cancelEditBtn.classList.add('hidden');
     setAutoDateTime();
 }
 
-window.deleteRecord = function(id) {
+window.deleteRecord = async function(id) {
     const pwd = prompt('Enter Admin Password to delete this record:');
     if (pwd !== 'admin123') {
         showToast('Unauthorized action', 'error');
@@ -438,16 +473,20 @@ window.deleteRecord = function(id) {
     }
 
     if (confirm('Are you sure you want to delete this record permanently?')) {
-        records = records.filter(r => r.id !== id);
-        saveData();
-        updateStaffPanel();
-        updateFilterDropdowns();
-        renderTable();
-        updateDashboardCards();
-        showToast('Record deleted');
-        
-        if (recordIdInput.value === id) {
-            resetForm();
+        const { error } = await supabase
+            .from('customers')
+            .delete()
+            .eq('id', id);
+            
+        if (error) {
+            showToast('Failed to delete record: ' + error.message, 'error');
+            console.error(error);
+        } else {
+            showToast('Record deleted');
+            if (recordIdInput.value === id) {
+                resetForm();
+            }
+            await fetchRecords();
         }
     }
 }
@@ -507,7 +546,7 @@ exportBtn.addEventListener('click', () => {
             `"${(r.room_number || '').replace(/"/g, '""')}"`,
             r.repeat_customer ? 'TRUE' : 'FALSE',
             r.mallu_customer ? 'TRUE' : 'FALSE',
-            new Date(r.created_at || Date.now()).toISOString()
+            new Date(r.created_at).toISOString()
         ];
         csvRows.push(values.join(','));
     });

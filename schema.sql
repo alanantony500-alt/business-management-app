@@ -1,7 +1,13 @@
+-- Drop existing table and types if they exist so you can run this multiple times without errors
+DROP TABLE IF EXISTS customers CASCADE;
+DROP TYPE IF EXISTS body_size_enum CASCADE;
+DROP TYPE IF EXISTS behavior_enum CASCADE;
+DROP TYPE IF EXISTS service_timing_enum CASCADE;
+
 -- Enable UUID extension if not already enabled
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Create Enum Types (Optional, but good for strict typing in Postgres)
+-- Create Enum Types
 CREATE TYPE body_size_enum AS ENUM ('BIG', 'MEDIUM', 'LARGE');
 CREATE TYPE behavior_enum AS ENUM ('GOOD', 'NO BAD', 'BAD', 'VERY BAD');
 CREATE TYPE service_timing_enum AS ENUM ('1 HOUR', '2 HOUR', '3 HOUR');
