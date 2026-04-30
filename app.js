@@ -1,4 +1,5 @@
 // Initialize Supabase Client
+try {
 const SUPABASE_URL = 'https://dhlfcenonuuqgcecixwm.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_jbSb-Iko_JxHF7cegulmqg_9Iy1xHtO';
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -89,7 +90,10 @@ async function checkAuth() {
 
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    if (usernameInput.value === 'admin' && passwordInput.value === 'admin123') {
+    const userVal = usernameInput.value.trim().toLowerCase();
+    const passVal = passwordInput.value.trim();
+    
+    if (userVal === 'admin' && passVal === '12345') {
         isAuthenticated = true;
         sessionStorage.setItem('is_authenticated', 'true');
         loginError.textContent = '';
@@ -101,6 +105,10 @@ loginForm.addEventListener('submit', async (e) => {
         loginError.textContent = 'Invalid credentials';
     }
 });
+} catch (e) {
+    alert("Critical Script Error on Load: " + e.message);
+    console.error(e);
+}
 
 logoutBtn.addEventListener('click', () => {
     isAuthenticated = false;
