@@ -69,7 +69,7 @@ const totalCommissionEl = document.getElementById('total-commission');
 
 // State
 let records = [];
-let isAuthenticated = sessionStorage.getItem('is_authenticated') === 'true';
+let isAuthenticated = localStorage.getItem('is_authenticated') === 'true';
 
 // Initial Setup
 async function initApp() {
@@ -95,7 +95,7 @@ loginForm.addEventListener('submit', async (e) => {
     
     if (userVal === 'admin' && passVal === '12345') {
         isAuthenticated = true;
-        sessionStorage.setItem('is_authenticated', 'true');
+        localStorage.setItem('is_authenticated', 'true');
         loginError.textContent = '';
         usernameInput.value = '';
         passwordInput.value = '';
@@ -112,7 +112,7 @@ loginForm.addEventListener('submit', async (e) => {
 
 logoutBtn.addEventListener('click', () => {
     isAuthenticated = false;
-    sessionStorage.removeItem('is_authenticated');
+    localStorage.removeItem('is_authenticated');
     checkAuth();
 });
 
@@ -179,8 +179,9 @@ recordForm.addEventListener('submit', async (e) => {
         mallu_customer: malluCustomerInput.checked
     };
     
-    const originalBtnHtml = submitBtnText.parentElement.innerHTML;
-    submitBtnText.parentElement.innerHTML = '<i data-lucide="loader" class="spin"></i> <span>Saving...</span>';
+    const submitBtn = submitBtnText.parentElement;
+    const originalBtnHtml = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i data-lucide="loader" class="spin"></i> <span>Saving...</span>';
     lucide.createIcons();
     
     if (id) {
@@ -210,7 +211,7 @@ recordForm.addEventListener('submit', async (e) => {
         }
     }
     
-    submitBtnText.parentElement.innerHTML = originalBtnHtml;
+    submitBtn.innerHTML = originalBtnHtml;
     lucide.createIcons();
     
     resetForm();
