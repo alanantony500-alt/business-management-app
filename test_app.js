@@ -1,4 +1,5 @@
 // Initialize Supabase Client
+try {
 const SUPABASE_URL = 'https://dhlfcenonuuqgcecixwm.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_jbSb-Iko_JxHF7cegulmqg_9Iy1xHtO';
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -104,6 +105,10 @@ loginForm.addEventListener('submit', async (e) => {
         loginError.textContent = 'Invalid credentials';
     }
 });
+} catch (e) {
+    console.log("Critical Script Error on Load: " + e.message);
+    console.error(e);
+}
 
 logoutBtn.addEventListener('click', () => {
     isAuthenticated = false;
@@ -150,14 +155,8 @@ autoDateTimeBtn.addEventListener('click', setAutoDateTime);
 setAutoDateTime();
 
 // Form Submit (Insert / Update to Supabase)
-const realSubmitBtn = document.getElementById('real-submit-btn');
-realSubmitBtn.addEventListener('click', async (e) => {
+recordForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    if (!recordForm.checkValidity()) {
-        recordForm.reportValidity();
-        return;
-    }
-    
     try {
     
     const id = recordIdInput.value;
@@ -216,7 +215,7 @@ realSubmitBtn.addEventListener('click', async (e) => {
     resetForm();
     await fetchRecords(); // Refresh data from cloud
     } catch (err) {
-        alert("CRASH DURING SUBMIT: " + err.message);
+        console.log("CRASH DURING SUBMIT: " + err.message);
         console.error(err);
     }
 });
