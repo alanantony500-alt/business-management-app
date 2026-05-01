@@ -164,17 +164,17 @@ recordForm.addEventListener('submit', async (e) => {
     
     const recordData = {
         name: customerName.value.trim(),
-        phone: phoneNumber.value.trim(),
-        nationality: nationalityInput.value.trim(),
+        phone: phoneNumber.value.trim() || null,
+        nationality: nationalityInput.value.trim() || null,
         amount_aed: amountAed,
         staff_commission: staffCommission,
-        staff_name: staffNameInput.value.trim(),
-        body_size: bodySizeInput.value,
-        behavior: behaviorInput.value,
-        service_timing: serviceTimingInput.value,
-        service_date: serviceDate.value,
-        service_time: serviceTime.value,
-        room_number: roomNumberInput.value.trim(),
+        staff_name: staffNameInput.value.trim() || null,
+        body_size: bodySizeInput.value || null,
+        behavior: behaviorInput.value || null,
+        service_timing: serviceTimingInput.value || null,
+        service_date: serviceDate.value || null,
+        service_time: serviceTime.value || null,
+        room_number: roomNumberInput.value.trim() || null,
         repeat_customer: repeatCustomerInput.checked,
         mallu_customer: malluCustomerInput.checked
     };
