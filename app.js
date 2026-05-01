@@ -179,10 +179,8 @@ recordForm.addEventListener('submit', async (e) => {
         mallu_customer: malluCustomerInput.checked
     };
     
-    const submitBtn = submitBtnText.parentElement;
-    const originalBtnHtml = submitBtn.innerHTML;
-    submitBtn.innerHTML = '<i data-lucide="loader" class="spin"></i> <span>Saving...</span>';
-    lucide.createIcons();
+    const originalText = submitBtnText.textContent;
+    submitBtnText.textContent = 'Saving...';
     
     if (id) {
         // Update existing record
@@ -211,8 +209,7 @@ recordForm.addEventListener('submit', async (e) => {
         }
     }
     
-    submitBtn.innerHTML = originalBtnHtml;
-    lucide.createIcons();
+    submitBtnText.textContent = id ? 'Update Record' : 'Save Record';
     
     resetForm();
     await fetchRecords(); // Refresh data from cloud
