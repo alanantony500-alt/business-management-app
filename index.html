@@ -10,39 +10,10 @@
 </head>
 <body>
     <!-- Login Screen -->
-    <div id="login-screen" class="screen active">
-        <div class="login-card glass-card">
-            <div class="login-header">
-                <i data-lucide="shield-check" class="icon-large accent-color"></i>
-                <h2>Admin Access</h2>
-                <p>Secure login for management</p>
-            </div>
-            <form id="login-form">
-                <div class="input-group">
-                    <label for="username">Username</label>
-                    <div class="input-wrapper">
-                        <i data-lucide="user"></i>
-                        <input type="text" id="username" placeholder="admin" required>
-                    </div>
-                </div>
-                <div class="input-group">
-                    <label for="password">Password</label>
-                    <div class="input-wrapper">
-                        <i data-lucide="lock"></i>
-                        <input type="password" id="password" placeholder="12345" required>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block">
-                    <span>Login securely</span>
-                    <i data-lucide="arrow-right"></i>
-                </button>
-            </form>
-            <div id="login-error" class="error-msg"></div>
-        </div>
-    </div>
+    
 
     <!-- Main Application Wrapper -->
-    <div id="dashboard-screen" class="screen app-wrapper">
+    <div id="dashboard-screen" class="screen app-wrapper active">
         
         <!-- STAFF PANEL SIDEBAR -->
         <aside class="staff-sidebar glass-card">
@@ -130,7 +101,7 @@
                                 
                                 <div class="input-group">
                                     <label for="phone-number">Phone</label>
-                                    <input type="tel" id="phone-number" placeholder="+971 50 123 4567" required>
+                                    <input type="tel" id="phone-number" placeholder="+971 50 123 4567" >
                                 </div>
                                 
                                 <div class="input-group">
@@ -150,7 +121,7 @@
                                 
                                 <div class="input-group">
                                     <label for="nationality">Nationality</label>
-                                    <input type="text" id="nationality" placeholder="e.g. American, British" required>
+                                    <input type="text" id="nationality" placeholder="e.g. American, British" >
                                 </div>
                                 
                                 <div class="input-group">
@@ -165,12 +136,12 @@
                                 
                                 <div class="input-group">
                                     <label for="room-number">Room Number</label>
-                                    <input type="text" id="room-number" placeholder="e.g. Room 101" required>
+                                    <input type="text" id="room-number" placeholder="e.g. Room 101" >
                                 </div>
 
                                 <div class="input-group">
                                     <label for="service-timing">Service Timing</label>
-                                    <select id="service-timing" class="filter-input" style="width: 100%; height: 46px;" required>
+                                    <select id="service-timing" class="filter-input" style="width: 100%; height: 46px;" >
                                         <option value="" disabled selected>Select timing...</option>
                                         <option value="1 HOUR">1 HOUR</option>
                                         <option value="2 HOUR">2 HOUR</option>
@@ -180,7 +151,7 @@
                                 
                                 <div class="input-group">
                                     <label for="body-size">Body Size</label>
-                                    <select id="body-size" class="filter-input" style="width: 100%; height: 46px;" required>
+                                    <select id="body-size" class="filter-input" style="width: 100%; height: 46px;" >
                                         <option value="" disabled selected>Select size...</option>
                                         <option value="BIG">BIG</option>
                                         <option value="MEDIUM">MEDIUM</option>
@@ -190,7 +161,7 @@
 
                                 <div class="input-group">
                                     <label for="behavior">Behavior</label>
-                                    <select id="behavior" class="filter-input" style="width: 100%; height: 46px;" required>
+                                    <select id="behavior" class="filter-input" style="width: 100%; height: 46px;" >
                                         <option value="" disabled selected>Select behavior...</option>
                                         <option value="GOOD">GOOD</option>
                                         <option value="NO BAD">NO BAD</option>

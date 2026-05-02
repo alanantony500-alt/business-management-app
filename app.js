@@ -1,19 +1,21 @@
-// Initialize Supabase Client
-const SUPABASE_URL = 'https://dhlfcenonuuqgcecixwm.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_jbSb-Iko_JxHF7cegulmqg_9Iy1xHtO';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let supabase = null;
+try {
+    const SUPABASE_URL = 'https://dhlfcenonuuqgcecixwm.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_jbSb-Iko_JxHF7cegulmqg_9Iy1xHtO';
+    if (window.supabase) supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+} catch (e) { console.warn("Supabase load failed"); }
 
 // Initialize Lucide Icons
-lucide.createIcons();
+try { lucide.createIcons(); } catch (e) { console.warn("Lucide load failed"); }
 
 // Elements
-const loginScreen = document.getElementById('login-screen');
+// loginScreen removed
 const dashboardScreen = document.getElementById('dashboard-screen');
-const loginForm = document.getElementById('login-form');
-const usernameInput = document.getElementById('username');
-const passwordInput = document.getElementById('password');
-const loginError = document.getElementById('login-error');
-const logoutBtn = document.getElementById('logout-btn');
+// loginForm removed
+
+
+
+
 
 // Form Elements
 const recordForm = document.getElementById('record-form');
@@ -68,48 +70,18 @@ const totalCommissionEl = document.getElementById('total-commission');
 
 // State
 let records = [];
-let isAuthenticated = localStorage.getItem('is_authenticated') === 'true';
 
 // Initial Setup
 async function initApp() {
-    checkAuth();
-}
-
-async function checkAuth() {
-    if (isAuthenticated) {
-        loginScreen.classList.remove('active');
-        dashboardScreen.classList.add('active');
-        await fetchRecords();
-        lucide.createIcons();
-    } else {
-        dashboardScreen.classList.remove('active');
-        loginScreen.classList.add('active');
-    }
-}
-
-loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const userVal = usernameInput.value.trim().toLowerCase();
-    const passVal = passwordInput.value.trim();
+    document.getElementById('dashboard-screen').classList.add('active');
     
-    if (userVal === 'admin' && passVal === '12345') {
-        isAuthenticated = true;
-        localStorage.setItem('is_authenticated', 'true');
-        loginError.textContent = '';
-        usernameInput.value = '';
-        passwordInput.value = '';
-        checkAuth();
-        showToast('Logged in securely as Admin');
-    } else {
-        loginError.textContent = 'Invalid credentials';
-    }
-});
-
-logoutBtn.addEventListener('click', () => {
-    isAuthenticated = false;
-    localStorage.removeItem('is_authenticated');
-    checkAuth();
-});
+    // Hide login screen safely if it exists in DOM
+    const loginScreen = document.getElementById('login-screen');
+    if (loginScreen) loginScreen.classList.remove('active');
+    
+    await fetchRecords();
+    try { lucide.createIcons(); } catch (e) { console.warn("Lucide load failed"); }
+}
 
 // Fetch Data from Supabase
 async function fetchRecords() {
@@ -149,77 +121,82 @@ function setAutoDateTime() {
 autoDateTimeBtn.addEventListener('click', setAutoDateTime);
 setAutoDateTime();
 
-// Form Submit (Insert / Update to Supabase)
-const realSubmitBtn = document.getElementById('real-submit-btn');
-realSubmitBtn.addEventListener('click', async (e) => {
-    e.preventDefault();
-    if (!recordForm.checkValidity()) {
-        recordForm.reportValidity();
+// Form Submit Logic
+async function handleFormSubmit(e) {
+    if (e) e.preventDefault();
+    // Manual Validation
+    if (!customerName.value.trim() || !amountInput.value || !staffCommissionInput.value || !staffNameInput.value || !serviceDate.value || !serviceTime.value) {
+        showToast('Please fill out all required fields (Name, Amount, Commission, Staff Name, Date, Time)', 'error');
         return;
     }
     
     try {
-    
-    const id = recordIdInput.value;
-    const amountAed = parseFloat(amountInput.value) || 0;
-    const staffCommission = parseFloat(staffCommissionInput.value) || 0;
-    
-    const recordData = {
-        name: customerName.value.trim(),
-        phone: phoneNumber.value.trim() || null,
-        nationality: nationalityInput.value.trim() || null,
-        amount_aed: amountAed,
-        staff_commission: staffCommission,
-        staff_name: staffNameInput.value.trim() || null,
-        body_size: bodySizeInput.value || null,
-        behavior: behaviorInput.value || null,
-        service_timing: serviceTimingInput.value || null,
-        service_date: serviceDate.value || null,
-        service_time: serviceTime.value || null,
-        room_number: roomNumberInput.value.trim() || null,
-        repeat_customer: repeatCustomerInput.checked,
-        mallu_customer: malluCustomerInput.checked
-    };
-    
-    const originalText = submitBtnText.textContent;
-    submitBtnText.textContent = 'Saving...';
-    
-    if (id) {
-        // Update existing record
-        const { error } = await supabase
-            .from('customers')
-            .update(recordData)
-            .eq('id', id);
-            
-        if (error) {
-            showToast('Failed to update record: ' + error.message, 'error');
-            console.error(error);
+        const id = recordIdInput.value;
+        const amountAed = parseFloat(amountInput.value) || 0;
+        const staffCommission = parseFloat(staffCommissionInput.value) || 0;
+        
+        const recordData = {
+            name: customerName.value.trim(),
+            phone: phoneNumber.value.trim() || null,
+            nationality: nationalityInput.value.trim() || null,
+            amount_aed: amountAed,
+            staff_commission: staffCommission,
+            staff_name: staffNameInput.value.trim() || null,
+            body_size: bodySizeInput.value || null,
+            behavior: behaviorInput.value || null,
+            service_timing: serviceTimingInput.value || null,
+            service_date: serviceDate.value || null,
+            service_time: serviceTime.value || null,
+            room_number: roomNumberInput.value.trim() || null,
+            repeat_customer: repeatCustomerInput.checked,
+            mallu_customer: malluCustomerInput.checked
+        };
+        
+        const originalText = submitBtnText.textContent;
+        submitBtnText.textContent = 'Saving...';
+        
+        if (id) {
+            // Update existing record
+            const { error } = await supabase
+                .from('customers')
+                .update(recordData)
+                .eq('id', id);
+                
+            if (error) {
+                showToast('Failed to update record: ' + error.message, 'error');
+                console.error(error);
+            } else {
+                showToast('Record updated successfully');
+            }
         } else {
-            showToast('Record updated successfully');
+            // Insert new record
+            const { error } = await supabase
+                .from('customers')
+                .insert([recordData]);
+                
+            if (error) {
+                showToast('Failed to add record: ' + error.message, 'error');
+                console.error(error);
+            } else {
+                showToast('New record added successfully');
+            }
         }
-    } else {
-        // Insert new record
-        const { error } = await supabase
-            .from('customers')
-            .insert([recordData]);
-            
-        if (error) {
-            showToast('Failed to add record: ' + error.message, 'error');
-            console.error(error);
-        } else {
-            showToast('New record added successfully');
-        }
-    }
-    
-    submitBtnText.textContent = id ? 'Update Record' : 'Save Record';
-    
-    resetForm();
-    await fetchRecords(); // Refresh data from cloud
+        
+        submitBtnText.textContent = id ? 'Update Record' : 'Save Record';
+        
+        resetForm();
+        await fetchRecords(); // Refresh data from cloud
     } catch (err) {
         alert("CRASH DURING SUBMIT: " + err.message);
         console.error(err);
     }
-});
+}
+
+const realSubmitBtn = document.getElementById('real-submit-btn');
+if (realSubmitBtn) {
+    realSubmitBtn.addEventListener('click', handleFormSubmit);
+}
+recordForm.addEventListener('submit', handleFormSubmit);
 
 // 👩💼 STAFF PANEL LOGIC
 function updateStaffPanel() {
